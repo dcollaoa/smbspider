@@ -1,0 +1,4 @@
+alive-progress==3.2.0
+colorama==0.4.6
+pysmb==1.2.10
+rich==13.9.4
