@@ -4,13 +4,11 @@
 
 ## Description
 
-This tool can perform recursive enumeration of SMB shares to facilitate privilege escalation or intel gathering in a Windows environment. By leveraging valid credentials, it connects to SMB services on target hosts to discover and download files, search for sensitive information (via regex or fuzzy matching), and optionally read "juicy" file contents on the fly.
+This tool performs recursive enumeration of SMB shares, helping you discover and download files, search for specific keywords (regex or fuzzy matches), and optionally read “juicy” file contents on the fly.
 
-**smbspider** supports authentication using cleartext passwords (username/password) or domain credentials and stores a local record in SQLite to prevent duplicated downloads. It also supports interactive tree browsing to selectively grab only what you need.
+**smbspider** supports authentication using cleartext credentials (username/password) or domain credentials, and it records previously downloaded files in an SQLite database to avoid re-downloading. It also offers an interactive tree browsing mode to let you selectively grab only what you need.
 
-Exchange of sensitive information without encrypted SMB (SMB signing/SMB encryption) is possible, though not recommended. You can also run this tool through a SOCKS proxy if configured at the system level or via tunneling tools.
-
-It is designed to be a versatile component in red teaming or security assessments.
+It can operate without SMB encryption (though it's not recommended) and may be tunneled through a SOCKS proxy if configured at the system or networking level. This flexibility makes **smbspider** a convenient component for security assessments or general SMB share enumeration. 
 
 ## Simple usage
 
