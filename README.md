@@ -60,12 +60,12 @@ options:
 python smbspider.py --ip 10.129.180.104 --share "Users" --username "rose" --password "KxEPkKe6R8su"
 ```
 
-### Spidering a Specific Share and Reading Juicy Files on the Fly
+#### Spidering a Specific Share and Reading Juicy Files on the Fly
 ```bash
 python smbspider.py --ip 10.129.180.104 --share "Users" --username "rose" --password "KxEPkKe6R8su" --read
 ```
 
-### Spidering a Specific Share with Fuzzy Search and Reading Juicy Files
+#### Spidering a Specific Share with Fuzzy Search and Reading Juicy Files
 ```bash
 python smbspider.py --ip 10.129.180.104 --share "Users" --username "rose" --password "KxEPkKe6R8su" --fuzzy-search common.txt --read
 ```
@@ -75,24 +75,24 @@ python smbspider.py --ip 10.129.180.104 --share "Users" --username "rose" --pass
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --regex-search "password|secret" --read 
 ```
 
-### Spidering a Specific Share with Metadata Extraction
+#### Spidering a Specific Share with Metadata Extraction
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --read --metadata
 ```
 
-### Spidering a Specific Share and Reading Files from a Specific Path
+#### Spidering a Specific Share and Reading Files from a Specific Path
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --remote_path "\Default\Appdata\Local\Microsoft\Windows\WinX\Group3\" --read
 ```
 
-### Spidering a Specific Share and Saving Files in a Custom Directory
+#### Spidering a Specific Share and Saving Files in a Custom Directory
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --remote_path "\Default\Appdata\Local\Microsoft\Windows\WinX\Group3" --local_path "Group_Downloads" --read
 ```
 
 ---
 
-## Spidering All Shares Examples
+### Spidering All Shares Examples
 
 #### Basic Spidering on All Shares
 ```bash
@@ -119,7 +119,7 @@ python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --tree-interactive
 ```
 
-### Spidering All Shares with Metadata Extraction
+#### Spidering All Shares with Metadata Extraction
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --metadata
 ```
