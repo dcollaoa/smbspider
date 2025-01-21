@@ -12,6 +12,7 @@ from colorama import Fore, Style
 from rich.console import Console
 import questionary
 import sqlite3
+import hashlib  # --- NEW ---
 
 console = Console()
 
@@ -20,6 +21,9 @@ console = Console()
 # =====================
 downloaded_files = []
 downloaded_metadata = []
+
+# --- NEW ---
+hidden_read_data = []  # Will store content from all "juicy" files if --hidden-read is enabled.
 
 # =====================
 # ASCII Art
@@ -31,8 +35,9 @@ ASCII_ART = """
 ▄  ▀▀▀▀▄   █ ▄ █ █ ▀ ▄ ▄  ▀▀▀▀▄   █▀▀▀  ██ █   █ ██▄▄    █▀▀▌  
  ▀▄▄▄▄▀    █   █ █  ▄▀  ▀▄▄▄▄▀    █     ▐█ █  █  █▄   ▄▀ █  █  
               █  ███               █     ▐ ███▀  ▀███▀     █   
-             ▀                      ▀                     ▀[/cyan][purple]   v1.3 | @3ky_sec [/purple]
-"""
+             ▀                      ▀                     ▀    v1.4[/cyan]
+[purple]diego.collao.albornoz@gmail.com | dcollao.pages.dev | @3ky_sec [/purple]
+             """
 
 # =====================
 # File extension constants
@@ -204,7 +209,7 @@ def connect_with_retries(
     raise Exception("Failed to connect after multiple attempts.")
 
 # =====================
-# Reading file content
+# Reading file content (Interactive)
 # =====================
 def read_file_content(file_path: str) -> None:
     """
@@ -228,6 +233,22 @@ def read_file_content(file_path: str) -> None:
                 console.print(f"[yellow]{box_bottom}[/yellow]")
     except Exception as e:
         error_message(f"Failed to read file {file_path}: {e}")
+
+# --- NEW ---
+def hidden_read_file_content(file_path: str) -> None:
+    """
+    Silently read the entire content of a file (if it is 'juicy') 
+    and store it in hidden_read_data for later JSON export.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
+            content = file.read()
+            hidden_read_data.append({
+                "file_path": file_path,
+                "content": content
+            })
+    except Exception as e:
+        error_message(f"Failed to hidden-read file {file_path}: {e}")
 
 # =====================
 # Keyword searching (Regex)
@@ -281,12 +302,29 @@ def fuzzy_search_in_file(file_path: str, fuzzy_words: list[str], fuzzy_threshold
     except Exception as e:
         error_message(f"Failed to perform fuzzy search in {file_path}: {e}")
 
+# --- NEW ---
+def compute_file_hash(file_path: str, hash_algo: str = "md5") -> str:
+    """
+    Compute the hash (MD5 by default) of a file's content.
+    Return the hexadecimal digest.
+    """
+    try:
+        h = hashlib.new(hash_algo)
+        with open(file_path, 'rb') as f:
+            for chunk in iter(lambda: f.read(4096), b''):
+                h.update(chunk)
+        return h.hexdigest()
+    except Exception as e:
+        error_message(f"Failed to compute hash for {file_path}: {e}")
+        return ""
+
 # =====================
 # Metadata Extraction
 # =====================
-def extract_file_metadata(file_path: str) -> dict:
+def extract_file_metadata(file_path: str, do_hash: bool = False) -> dict:
     """
     Extract basic metadata for the given file: size, creation time, modification time.
+    If do_hash is True, also compute the file's hash (MD5).
     Returns a dictionary with this information.
     """
     try:
@@ -297,6 +335,8 @@ def extract_file_metadata(file_path: str) -> dict:
             "creation_time": time.ctime(stat_info.st_ctime),
             "modification_time": time.ctime(stat_info.st_mtime)
         }
+        if do_hash:
+            metadata["hash"] = compute_file_hash(file_path, "md5")
         return metadata
     except Exception as e:
         error_message(f"Failed to extract metadata for file {file_path}: {e}")
@@ -316,7 +356,8 @@ def download_file(
     metadata_extraction: bool = False,
     fuzzy_words: list[str] = None,
     fuzzy_threshold: int = 80,
-    db_conn: sqlite3.Connection = None
+    db_conn: sqlite3.Connection = None,
+    hidden_read: bool = False  # --- NEW ---
 ):
     """
     Downloads a single file from SMB to local.
@@ -325,6 +366,7 @@ def download_file(
        - Extracting metadata
        - Regex / Fuzzy searches
        - Prompt to read content if needed
+       - Optionally hidden-read content if 'hidden_read' is enabled
     """
     if fuzzy_words is None:
         fuzzy_words = []
@@ -360,17 +402,26 @@ def download_file(
     if db_conn:
         record_downloaded_file(db_conn, share_name, remote_file_path, local_file_path, last_write_time)
 
+    # If we are extracting metadata, do it (including file hash).
     if metadata_extraction:
-        file_metadata = extract_file_metadata(local_file_path)
+        file_metadata = extract_file_metadata(local_file_path, do_hash=True)
         if file_metadata:
             downloaded_metadata.append(file_metadata)
 
+    # If read_juicy_files is True, prompt user to read.
     if read_juicy_files and local_file_path.lower().endswith(JUICY_EXTENSIONS):
         read_file_content(local_file_path)
 
+    # --- NEW ---
+    # If hidden_read is True and extension is juicy, read content silently
+    if hidden_read and local_file_path.lower().endswith(JUICY_EXTENSIONS):
+        hidden_read_file_content(local_file_path)
+
+    # Regex search
     if regex_pattern:
         search_for_keywords(local_file_path, regex_pattern)
 
+    # Fuzzy search
     if fuzzy_words:
         fuzzy_search_in_file(local_file_path, fuzzy_words, fuzzy_threshold)
 
@@ -390,16 +441,18 @@ def download_files(
     metadata_extraction: bool = False,
     fuzzy_words: list[str] = None,
     fuzzy_threshold: int = 80,
-    db_conn: sqlite3.Connection = None
+    db_conn: sqlite3.Connection = None,
+    hidden_read: bool = False  # --- NEW ---
 ) -> None:
     """
     Recursively downloads files from the specified SMB share and path.
     - If 'read_juicy_files' is True, prompt to read files with JUICY_EXTENSIONS.
     - If 'regex_pattern' is not empty, perform a regex search in each downloaded file.
-    - If 'metadata_extraction' is True, extract basic metadata.
+    - If 'metadata_extraction' is True, extract basic metadata (including file hash).
     - If 'fuzzy_words' is not empty, do a fuzzy search with 'fuzzy_threshold' as min score.
     - 'db_conn' is an SQLite connection for persistence.
-
+    - If 'hidden_read' is True, we silently read content of juicy extensions and store it in JSON.
+    
     This function assumes that 'remote_path' is a directory.
     For single-file download, use 'download_file()' instead.
     """
@@ -427,7 +480,8 @@ def download_files(
                         metadata_extraction,
                         fuzzy_words,
                         fuzzy_threshold,
-                        db_conn
+                        db_conn,
+                        hidden_read
                     )
             else:
                 remote_file_path = os.path.join(remote_path, file.filename)
@@ -443,7 +497,8 @@ def download_files(
                     metadata_extraction,
                     fuzzy_words,
                     fuzzy_threshold,
-                    db_conn
+                    db_conn,
+                    hidden_read  # --- NEW ---
                 )
 
     except Exception as e:
@@ -465,6 +520,20 @@ def save_metadata_to_json() -> None:
     """
     with open("metadata_summary.json", "w") as f:
         json.dump(downloaded_metadata, f, indent=4)
+
+# --- NEW ---
+def save_hidden_read_to_json() -> None:
+    """
+    Saves the hidden-read contents of juicy files
+    to a separate JSON, named with a datetime stamp.
+    """
+    if not hidden_read_data:
+        return  # nothing to save
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    filename = f"hidden_read_{timestamp}.json"
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(hidden_read_data, f, indent=4)
+    log_message(f"Hidden read content saved to {filename}")
 
 # =====================
 # Counting files
@@ -493,18 +562,24 @@ def count_files(
 # =====================
 def check_share_permissions(conn: SMBConnection, share_name: str) -> tuple[bool, bool]:
     """
-    Checks if a share is readable (can_read) and writable (can_write)
-    by listing the path and attempting to create/delete a test directory.
-    Returns (can_read, can_write).
+    Checks if a share is readable (can_read) and writable (can_write).
+    Try `listPath(share_name, "/")` first; if it fails, try `listPath(share_name, "")`.  
+    If both fail due to "Access Denied," we conclude `can_read = False`.  
+    If they fail for any other reason, it might not be a permissions issue, so we could still consider it as `True`.  
+    Then, if `can_read` is True, we test `can_write` by creating and deleting a test directory.
     """
     can_read = False
     can_write = False
 
-    try:
-        conn.listPath(share_name, "/")
-        can_read = True
-    except Exception:
-        pass
+    test_roots = ["/", ""]
+
+    for test_root in test_roots:
+        try:
+            conn.listPath(share_name, test_root)
+            can_read = True
+            break
+        except Exception as e:
+            pass
 
     if can_read:
         test_dir = "test_dir_" + str(int(time.time()))
@@ -531,7 +606,7 @@ def build_file_tree(
       "name": <folder/file name>,
       "path": <SMB absolute path>,
       "isDirectory": bool,
-      "children": [ <sub-trees> ]
+      "children": []
     }
     """
     tree = {
@@ -601,7 +676,7 @@ if __name__ == "__main__":
         usage="%(prog)s [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] "
               "[--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] "
               "[--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] "
-              "[--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL]",
+              "[--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL] [--hidden-read]",
         description="SMB Spider"
     )
 
@@ -613,7 +688,7 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=445, help="SMB server port (default: 445)")
     parser.add_argument("--remote_path", default="", help="Initial directory on the SMB share")
     parser.add_argument("--local_path", default="./smb_downloads", help="Directory to save downloaded files")
-    parser.add_argument("--read", action="store_true", help="Read 'juicy' files after downloading")
+    parser.add_argument("--read", action="store_true", help="Read 'juicy' files after downloading (interactive prompt)")
     parser.add_argument("--regex-search", default="",
                         help="Regex pattern(s) to search in downloaded files (e.g. 'password|credential|secret')")
     parser.add_argument("--fuzzy-search", default="",
@@ -623,9 +698,11 @@ if __name__ == "__main__":
     parser.add_argument("--tree-interactive", action="store_true",
                         help="If set, show a tree preview and allow interactive selective download")
     parser.add_argument("--metadata", action="store_true",
-                        help="Extract basic metadata from each downloaded file")
+                        help="Extract basic metadata from each downloaded file (also computes file hash)")
     parser.add_argument("--loglevel", default="INFO",
                         help="Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default=INFO")
+    parser.add_argument("--hidden-read", action="store_true",
+                        help="Silently read all juicy files and store their contents in a separate JSON file")
 
     args = parser.parse_args()
 
@@ -766,7 +843,8 @@ if __name__ == "__main__":
                                 args.metadata,
                                 fuzzy_words,
                                 args.fuzzy_threshold,
-                                db_conn
+                                db_conn,
+                                hidden_read=args.hidden_read  # --- pass it here
                             )
                         else:
                             local_file_path = os.path.join(args.local_path, os.path.basename(chosen_path))
@@ -781,7 +859,8 @@ if __name__ == "__main__":
                                 args.metadata,
                                 fuzzy_words,
                                 args.fuzzy_threshold,
-                                db_conn
+                                db_conn,
+                                hidden_read=args.hidden_read  # --- pass it here
                             )
 
                 log_message(f"Download complete for share '{share}'.")
@@ -804,7 +883,8 @@ if __name__ == "__main__":
                         args.metadata,
                         fuzzy_words,
                         args.fuzzy_threshold,
-                        db_conn
+                        db_conn,
+                        hidden_read=args.hidden_read  # --- pass it here
                     )
 
                 log_message(f"Download complete for share '{share}'.")
@@ -820,9 +900,14 @@ if __name__ == "__main__":
             db_conn.close()
             log_message("Closed local SQLite database connection.")
 
+        # Regular summary
         save_to_json()
         log_message("Summary saved to download_summary.json.")
 
         if args.metadata:
             save_metadata_to_json()
             log_message("Metadata saved to metadata_summary.json.")
+
+        # --- NEW ---
+        if args.hidden_read:
+            save_hidden_read_to_json()

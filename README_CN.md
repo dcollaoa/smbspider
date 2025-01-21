@@ -1,4 +1,4 @@
-简体中文 | [English](./README.md)
+English | [简体中文](./README_CN.md)
 
 # ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) SMBspider
 
@@ -24,14 +24,16 @@ https://github.com/user-attachments/assets/e3f09d15-4d5d-48ca-bb8f-d285e29cbe99
 ### 全局参数
 
 ```bash
+
    ▄▄▄▄▄   █▀▄▀█ ███      ▄▄▄▄▄   █ ▄▄  ▄█ ██▄   ▄███▄   █▄▄▄▄ 
   █     ▀▄ █ █ █ █  █    █     ▀▄ █   █ ██ █  █  █▀   ▀  █  ▄▀ 
 ▄  ▀▀▀▀▄   █ ▄ █ █ ▀ ▄ ▄  ▀▀▀▀▄   █▀▀▀  ██ █   █ ██▄▄    █▀▀▌  
  ▀▄▄▄▄▀    █   █ █  ▄▀  ▀▄▄▄▄▀    █     ▐█ █  █  █▄   ▄▀ █  █  
               █  ███               █     ▐ ███▀  ▀███▀     █   
-             ▀                      ▀                     ▀   v1.3 | @3ky_sec 
+             ▀                      ▀                     ▀   v1.4
+diego.collao.albornoz@gmail.com | dcollao.pages.dev | @3ky_sec     
 
-usage: smbspider.py [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] [--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] [--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] [--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL]
+usage: smbspider.py [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] [--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] [--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] [--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL] [--hidden-read]
 
 SMBspider
 
@@ -55,8 +57,9 @@ options:
   --fuzzy-threshold FUZZY_THRESHOLD
                         最小模糊匹配比率（0-100）。默认值为 80
   --tree-interactive    如果设置，显示树状预览并允许交互式选择性下载
-  --metadata            提取每个下载文件的基本元数据
+  --metadata            提取每个下载文件的基本元数据（还会计算文件哈希值）
   --loglevel LOGLEVEL   设置日志级别（DEBUG, INFO, WARNING, ERROR, CRITICAL）。默认值为 INFO
+  --hidden-read         静默读取所有敏感文件，并将其内容存储在单独的 JSON 文件中
 ```
 
 ---
@@ -78,7 +81,7 @@ python smbspider.py --ip 10.129.180.104 --share "Users" --username "rose" --pass
 python smbspider.py --ip 10.129.180.104 --share "Users" --username "rose" --password "KxEPkKe6R8su" --fuzzy-search common.txt --read
 ```
 
-#### 枚举特定共享并使用正则搜索读取敏感文件
+#### 枚举特定共享并使用正则表达式搜索读取敏感文件
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --regex-search "password|secret" --read
 ```
@@ -86,6 +89,11 @@ python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8
 #### 枚举特定共享并提取元数据
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --read --metadata
+```
+
+#### 枚举特定共享并静默读取文件
+```bash
+python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --hidden-read --metadata
 ```
 
 #### 枚举特定共享并从指定路径读取文件
@@ -117,17 +125,22 @@ python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --fuzzy-search common.txt --read
 ```
 
-#### 枚举所有共享并使用正则搜索读取敏感文件
+#### 枚举所有共享并使用正则表达式搜索读取敏感文件
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --regex-search "password|secret" --read
 ```
 
-#### 枚举所有共享并交互式树状显示
+#### 枚举所有共享并使用交互式树状显示
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --tree-interactive
 ```
 
-#### 枚举所有共享并提取元数据
+#### 枚举所有共享并提取元数据（包括哈希值）
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --metadata
+```
+
+#### 枚举所有共享并静默读取文件
+```bash
+python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --hidden-read --metadata
 ```

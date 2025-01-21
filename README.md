@@ -32,9 +32,10 @@ https://github.com/user-attachments/assets/e3f09d15-4d5d-48ca-bb8f-d285e29cbe99
 ▄  ▀▀▀▀▄   █ ▄ █ █ ▀ ▄ ▄  ▀▀▀▀▄   █▀▀▀  ██ █   █ ██▄▄    █▀▀▌  
  ▀▄▄▄▄▀    █   █ █  ▄▀  ▀▄▄▄▄▀    █     ▐█ █  █  █▄   ▄▀ █  █  
               █  ███               █     ▐ ███▀  ▀███▀     █   
-             ▀                      ▀                     ▀   v1.3 | @3ky_sec 
+             ▀                      ▀                     ▀   v1.4
+diego.collao.albornoz@gmail.com | dcollao.pages.dev | @3ky_sec     
 
-usage: smbspider.py [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] [--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] [--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] [--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL]
+usage: smbspider.py [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] [--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] [--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] [--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL] [--hidden-read]
 
 SMBspider
 
@@ -58,8 +59,9 @@ options:
   --fuzzy-threshold FUZZY_THRESHOLD
                         Minimum fuzzy match ratio (0-100). Default=80
   --tree-interactive    If set, show a tree preview and allow interactive selective download
-  --metadata            Extract basic metadata from each downloaded file
+  --metadata            Extract basic metadata from each downloaded file (also computes file hash)
   --loglevel LOGLEVEL   Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default=INFO
+  --hidden-read         Silently read all juicy files and store their contents in a separate JSON file
 ```
 
 ## Spidering Specific Share Examples
@@ -87,6 +89,11 @@ python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8
 #### Spidering a Specific Share with Metadata Extraction
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --read --metadata
+```
+
+#### Spidering a Specific Share with Hidden Reading
+```bash
+python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --share "Users" --hidden-read --metadata
 ```
 
 #### Spidering a Specific Share and Reading Files from a Specific Path
@@ -128,8 +135,12 @@ python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --tree-interactive
 ```
 
-#### Spidering All Shares with Metadata Extraction
+#### Spidering All Shares with Metadata Extraction (Including hash)
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --metadata
 ```
 
+#### Spidering All Shares with Hidden Reading
+```bash
+python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --hidden-read --metadata
+```
