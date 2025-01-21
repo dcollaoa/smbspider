@@ -12,11 +12,9 @@ It can operate without SMB encryption (though it's not recommended) and may be t
 
 ---
 
-## Video DEMO
+## Demo
 
-<video controls="">
-    <source src="https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/smbspider_demo.mp4" type="video/mp4">
-</video>
+[![smbspider_demo](https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/0121.gif)](https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/smbspider_demo.mp4)
 
 ---
 
