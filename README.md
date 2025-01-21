@@ -1,16 +1,16 @@
 English | [简体中文](./README_CN.md)
 
-# ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) smbspider
+# ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) SMBspider
 
-**smbspider** is a Python-powered SMB enumeration built to help you scour Windows shares for sensitive files, credentials, or metadata in a fast and efficient way.
+**SMBpider** is a Python-powered SMB enumeration built to help you scour Windows shares for sensitive files, credentials, or metadata in a fast and efficient way.
 
 ## Description
 
 This tool performs recursive enumeration of SMB shares, helping you discover and download files, search for specific keywords (regex or fuzzy matches), and optionally read “juicy” file contents on the fly.
 
-**smbspider** supports authentication using cleartext credentials (username/password) or domain credentials, and it records previously downloaded files in an SQLite database to avoid re-downloading. It also offers an interactive tree browsing mode to let you selectively grab only what you need.
+**SMBspider** supports authentication using cleartext credentials (username/password) or domain credentials, and it records previously downloaded files in an SQLite database to avoid re-downloading. It also offers an interactive tree browsing mode to let you selectively grab only what you need.
 
-It can operate without SMB encryption (though it's not recommended) and may be tunneled through a SOCKS proxy if configured at the system or networking level. This flexibility makes **smbspider** a convenient component for security assessments or general SMB share enumeration. 
+It can operate without SMB encryption (though it's not recommended) and may be tunneled through a SOCKS proxy if configured at the system or networking level. This flexibility makes **SMBspider** a convenient component for security assessments or general SMB share enumeration. 
 
 ---
 
@@ -36,7 +36,7 @@ https://github.com/user-attachments/assets/e3f09d15-4d5d-48ca-bb8f-d285e29cbe99
 
 usage: smbspider.py [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] [--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] [--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] [--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL]
 
-SMB Spider
+SMBspider
 
 options:
   -h, --help            show this help message and exit
