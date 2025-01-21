@@ -13,9 +13,8 @@ It can operate without SMB encryption (though it's not recommended) and may be t
 ---
 
 ## Demo
+https://github.com/user-attachments/assets/e3f09d15-4d5d-48ca-bb8f-d285e29cbe99
 
-[![smbspider_demo](https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/0121.gif)](https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/smbspider_demo.mp4)
-<video src="https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/smbspider_demo.mp4"></video>
 
 
 ---
