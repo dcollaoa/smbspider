@@ -1,16 +1,16 @@
 简体中文 | [English](./README.md)
 
-# ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) smbspider
+# ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) SMBspider
 
-**smbspider** 是一个基于 Python 的 SMB 枚举工具，旨在帮助你快速、高效地在 Windows 共享文件中搜索敏感文件、凭据或元数据。
+**SMBspider** 是一个基于 Python 的 SMB 枚举工具，旨在帮助你快速、高效地在 Windows 共享文件中搜索敏感文件、凭据或元数据。
 
 ## 描述
 
 此工具可以递归枚举 SMB 共享文件，帮助你发现和下载文件，按关键字（正则表达式或模糊匹配）搜索，并可选地实时读取“敏感”文件内容。
 
-**smbspider** 支持通过明文凭据（用户名/密码）或域凭据进行身份验证，并记录已下载的文件到 SQLite 数据库以避免重复下载。它还提供交互式的树状浏览模式，让你只选择需要的内容下载。
+**SMBspider** 支持通过明文凭据（用户名/密码）或域凭据进行身份验证，并记录已下载的文件到 SQLite 数据库以避免重复下载。它还提供交互式的树状浏览模式，让你只选择需要的内容下载。
 
-该工具可以在没有 SMB 加密的情况下运行（尽管不推荐），并可通过 SOCKS 代理进行隧道传输（如果在系统或网络级别配置了代理）。这些功能使 **smbspider** 成为安全评估或一般 SMB 共享枚举的一个便捷组件。
+该工具可以在没有 SMB 加密的情况下运行（尽管不推荐），并可通过 SOCKS 代理进行隧道传输（如果在系统或网络级别配置了代理）。这些功能使 **SMBspider** 成为安全评估或一般 SMB 共享枚举的一个便捷组件。
 
 ---
 
@@ -33,7 +33,7 @@ https://github.com/user-attachments/assets/e3f09d15-4d5d-48ca-bb8f-d285e29cbe99
 
 usage: smbspider.py [-h] --ip IP [--share SHARE] [--username USERNAME] [--password PASSWORD] [--domain DOMAIN] [--port PORT] [--remote_path REMOTE_PATH] [--local_path LOCAL_PATH] [--read] [--regex-search REGEX_SEARCH] [--fuzzy-search FUZZY_SEARCH] [--fuzzy-threshold FUZZY_THRESHOLD] [--tree-interactive] [--metadata] [--loglevel LOGLEVEL]
 
-SMB Spider
+SMBspider
 
 options:
   -h, --help            显示帮助信息并退出
