@@ -1,3 +1,5 @@
+English | [简体中文](./README_CN.md)
+
 # ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) smbspider
 
 **smbspider** is a Python-powered SMB enumeration built to help you scour Windows shares for sensitive files, credentials, or metadata in a fast and efficient way.
