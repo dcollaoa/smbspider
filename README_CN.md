@@ -1,3 +1,5 @@
+简体中文 | [English](./README.md)
+
 # ![smbspider logo](https://dcollao.pages.dev/images/smbspider_logo.png) smbspider
 
 **smbspider** 是一个基于 Python 的 SMB 枚举工具，旨在帮助你快速、高效地在 Windows 共享文件中搜索敏感文件、凭据或元数据。
