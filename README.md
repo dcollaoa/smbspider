@@ -12,6 +12,14 @@ It can operate without SMB encryption (though it's not recommended) and may be t
 
 ---
 
+## Video DEMO
+
+<video controls="">
+    <source src="https://pub-526793ce32ed4b74b90d92d47d14ccc4.r2.dev/smbspider_demo.mp4" type="video/mp4">
+</video>
+
+---
+
 ## User Guide
 
 ### Global Arguments
@@ -123,3 +131,4 @@ python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8
 ```bash
 python smbspider.py --ip 10.129.180.104 --username "rose" --password "KxEPkKe6R8su" --read --metadata
 ```
+
